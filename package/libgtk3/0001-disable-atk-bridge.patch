@@ -39,3 +39,14 @@ Signed-off-by: Hadrien Boutteville <hadrien.boutteville@gmail.com>
  
    backend_immodules += ['xim']
  
+@@ -588,7 +588,9 @@
+     x11_pkgs += ['xdamage']
+   endif
+
+-  atk_pkgs += ['atk-bridge-2.0']
++  if atkbridge_dep.found()
++    atk_pkgs += ['atk-bridge-2.0']
++  endif
+
+   cdata.set('HAVE_XDAMAGE', xdamage_dep.found() ? 1 : false)
+   cdata.set('HAVE_XCURSOR', xcursor_dep.found() ? 1 : false)
