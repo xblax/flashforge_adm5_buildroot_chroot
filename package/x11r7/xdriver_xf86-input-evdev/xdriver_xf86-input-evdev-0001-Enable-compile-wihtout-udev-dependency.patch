@@ -1,0 +1,58 @@
+From 34a982b2731c29d5326d46b13d28995772b80cde Mon Sep 17 00:00:00 2001
+From: Peter Seiderer <ps.report@gmx.net>
+Date: Thu, 10 Oct 2013 21:50:40 +0200
+Subject: [PATCH] Enable compile wihtout udev dependency.
+
+---
+ configure.ac | 2 +-
+ src/evdev.c  | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index dff2bcf..23baad8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -46,7 +46,7 @@ XORG_DEFAULT_OPTIONS
+ 
+ # Obtain compiler/linker options from server and required extensions
+ PKG_CHECK_MODULES(XORG, [xorg-server >= 1.12] xproto [inputproto >= 2.1.99.3])
+-PKG_CHECK_MODULES(UDEV, libudev)
++PKG_CHECK_MODULES(UDEV, libudev, [AC_DEFINE([HAVE_UDEV], [1], [Use UDEV])], [ ])
+ 
+ PKG_CHECK_MODULES(LIBEVDEV, [libevdev >= 0.4])
+ 
+diff --git a/src/evdev.c b/src/evdev.c
+index d540b87..0eedcdd 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -38,7 +38,9 @@
+ 
+ #include <linux/version.h>
+ #include <sys/stat.h>
++#ifdef HAVE_UDEV
+ #include <libudev.h>
++#endif
+ #include <unistd.h>
+ #include <errno.h>
+ #include <fcntl.h>
+@@ -294,6 +296,7 @@ SetXkbOption(InputInfoPtr pInfo, char *name, char **option)
+ static BOOL
+ EvdevDeviceIsVirtual(const char* devicenode)
+ {
++#ifdef HAVE_UDEV
+     struct udev *udev = NULL;
+     struct udev_device *device = NULL;
+     struct stat st;
+@@ -322,6 +325,9 @@ out:
+     udev_device_unref(device);
+     udev_unref(udev);
+     return rc;
++#else
++    return FALSE;
++#endif
+ }
+ 
+ #ifndef HAVE_SMOOTH_SCROLLING
+-- 
+1.8.1.4
+

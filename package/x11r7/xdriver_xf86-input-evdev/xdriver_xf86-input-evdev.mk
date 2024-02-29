@@ -16,7 +16,6 @@ XDRIVER_XF86_INPUT_EVDEV_DEPENDENCIES = \
 	libevdev \
 	mtdev \
 	xorgproto \
-	xserver_xorg-server \
-	udev
+	xserver_xorg-server
 
 $(eval $(autotools-package))
